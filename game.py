@@ -4,7 +4,6 @@ import sys
 import random
 
 # инициализируем модуль pygame, для обработки воспроизведения звука
-pygame.mixer.pre_init(44100, -16, 1, 512)
 
 bg_image = pygame.image.load("logo_snake.png")
 WHITE = pygame.Color("white")
@@ -12,14 +11,15 @@ RED = pygame.Color("red")
 SIZE_BLOCK = 20  # размер каждого блока
 COUNT_BLOCKS = 20  # кол-во блоков
 
-# Цвета для клеток на поле
 BLUE = (204, 255, 255)
-HEADER_COLOR = (0, 204, 153)
-
 SNAKE_COLOR = (0, 102, 0)
-MARGIN = 1
-HEADER_MARGIN = 70
+
 FRAME_COLOR = (0, 255, 204)
+HEADER_COLOR = (0, 204, 153)
+HEADER_MARGIN = 70
+
+
+MARGIN = 1
 snake_block = [
     [1, 2],
     [3, 4],
@@ -78,11 +78,11 @@ if __name__ == "__main__":
         def get_random_empty_block():
             x = random.randint(0, COUNT_BLOCKS - 1)
             y = random.randint(0, COUNT_BLOCKS - 1)
-            empty_block = SnakeBlock(x, y)
-            while empty_block in snake_blocks:
-                empty_block.x = random.randint(0, COUNT_BLOCKS - 1)
-                empty_block.y = random.randint(0, COUNT_BLOCKS - 1)
-            return empty_block
+            apple_block = SnakeBlock(x, y)
+            while apple_block in snake_blocks:
+                apple_block.x = random.randint(0, COUNT_BLOCKS - 1)
+                apple_block.y = random.randint(0, COUNT_BLOCKS - 1)
+            return apple_block
 
         snake_blocks = [SnakeBlock(9, 10)]  # Голова змейки
         apple = get_random_empty_block()
@@ -128,7 +128,7 @@ if __name__ == "__main__":
             screen.blit(text_total, (SIZE_BLOCK, SIZE_BLOCK))
             screen.blit(text_speed, (SIZE_BLOCK + 200, SIZE_BLOCK))
 
-            # Рисуем квадратики на поле
+            # Рисуем квадратики в шахматном порядке
             for row in range(COUNT_BLOCKS):
                 for column in range(COUNT_BLOCKS):
                     if (row + column) % 2 == 0:
@@ -139,6 +139,7 @@ if __name__ == "__main__":
                     draw_block(color, row, column)
 
             head = snake_blocks[-1]  # Назначаем голову змейки
+
             # Проверка на выход змейки за поле
             if not head.is_inside():
                 Game_Over_Music.play()
@@ -152,7 +153,7 @@ if __name__ == "__main__":
 
             pygame.display.flip()
 
-            # проверка на то, чтобы яблоко не заспавнилось на том пикселе, где находится часть змейки
+            # проверка на поедание яблока
             if apple == head:
                 total += 1
                 speed = total // 5 + 1
